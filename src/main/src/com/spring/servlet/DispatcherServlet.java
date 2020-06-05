@@ -216,14 +216,18 @@ public class DispatcherServlet extends HttpServlet {
                 if (!field.isAnnotationPresent(Autowried.class)) {
                     continue;
                 }
+
                 Object instance;
                 String beanName = field.getType().getName();
                 String simpleName = lowerFirstCase(field.getType().getSimpleName());
-                //首先根据Type注入，没有实例时根据Name，否则抛出异常
-                if (IOCByType.containsKey(beanName)) {
-                    instance = IOCByType.get(beanName);
+                String fieldName = field.getName();
+                //首先根据属性名称注入，如果没有实例，再根据再根据Type名称以及Type全称注入，否则抛出异常
+                if (IOCByName.containsKey(fieldName)) {
+                    instance = IOCByName.get(fieldName);
                 } else if (IOCByName.containsKey(simpleName)) {
                     instance = IOCByName.get(simpleName);
+                } else if (IOCByType.containsKey(beanName)) {
+                    instance = IOCByType.get(beanName);
                 } else {
                     throw new RuntimeException("Not find class to autowire");
                 }
@@ -326,7 +330,7 @@ public class DispatcherServlet extends HttpServlet {
         List<Object> args = new ArrayList<>();
         for (String param : params) {
             //从request中获取参数，然后放入参数列表
-            String parameter = request.getParameter(param);
+            Object parameter = request.getParameter(param);
             args.add(parameter);
         }
 
@@ -335,7 +339,7 @@ public class DispatcherServlet extends HttpServlet {
             Object result = method.invoke(object, args.toArray());
             //返回json(使用阿里的fastJson)
             if (jsonResult) {
-                writer.write(JSON.toJSONString(object));
+                writer.write(JSON.toJSONString(result));
             } else { //返回视图
                 doResolveView((String) result, request, response);
             }

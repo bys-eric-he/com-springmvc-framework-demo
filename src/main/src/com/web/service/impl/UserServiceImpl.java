@@ -6,14 +6,14 @@ import com.web.dao.UserDao;
 import com.web.entity.User;
 import com.web.service.UserService;
 
-@Service
+@Service("userService")
 public class UserServiceImpl implements UserService {
     @Autowried
     private UserDao userDao;
 
     @Override
-    public User getUser() {
-        return userDao.getUser();
+    public User getUser(String id) {
+        return userDao.getUser(id);
     }
 
     @Override

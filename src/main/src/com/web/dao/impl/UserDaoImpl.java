@@ -13,7 +13,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUser() {
-        return new User("1", "Eric.He", 28);
+    public User getUser(String id) {
+        return new User(id, "Eric.He", 28);
     }
 }
